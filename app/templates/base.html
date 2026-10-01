@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}TemporaryTextbook - Authorized Educational Bridge{% endblock %}</title>
+  <meta name="description" content="TemporaryTextbook provides authorized bridging learning materials for students awaiting their official textbooks.">
+  <link rel="stylesheet" href="/static/css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Compliance and Ethics Disclaimer Banner -->
+  <aside class="disclaimer-banner" role="complementary" aria-label="Authorized educational bridge notice">
+    <span style="font-size: 1.1rem;">🛡️</span>
+    <span>
+      <strong>Authorized Bridge Only:</strong> TemporaryTextbook provides teacher-created summaries, exercises, and openly licensed resources. We do <u>not</u> distribute copyrighted textbook scans.
+    </span>
+  </aside>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar" role="navigation" aria-label="Main Navigation">
+    <div class="nav-container">
+      <a href="/" class="brand">
+        <div class="brand-icon">📚</div>
+        <span>TemporaryTextbook</span>
+        <span class="brand-badge">MVP</span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-link {% if active_page == 'home' %}active{% endif %}">Home</a>
+        <a href="/student" class="nav-link {% if active_page == 'student' %}active{% endif %}">Student Portal</a>
+        <a href="/admin" class="nav-link {% if active_page == 'admin' %}active{% endif %}">Admin / Teacher Portal</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content Body -->
+  <main class="main-content">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Global Toast Container -->
+  <div id="toast-container" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+      <div>
+        <strong>TemporaryTextbook</strong> • Educational Access Bridge System
+      </div>
+      <div>
+        <span>Built with Python & FastAPI • SQLite • Open Education Compliance</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="/static/js/app.js"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

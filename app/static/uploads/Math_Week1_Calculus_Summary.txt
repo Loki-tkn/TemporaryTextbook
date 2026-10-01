@@ -1,0 +1,31 @@
+============================================================
+TEMPORARY LEARNING MATERIAL - AUTHORIZED BRIDGING RESOURCE
+Subject: Mathematics (Calculus I)
+Instructor: Prof. Margaret Vance | Dept. of Mathematics
+License: School Authorized / Teacher Original Curriculum
+Notice: This is a temporary bridging guide while official textbooks arrive.
+============================================================
+
+TOPIC 1: LIMITS AND CONTINUITY
+------------------------------------------------------------
+1. Intuitive Definition of a Limit:
+   As x approaches 'c', f(x) approaches 'L', denoted as:
+   lim (x -> c) f(x) = L
+
+2. Key Limit Laws:
+   - Sum Law: lim [f(x) + g(x)] = lim f(x) + lim g(x)
+   - Product Law: lim [f(x) * g(x)] = lim f(x) * lim g(x)
+   - Quotient Law: lim [f(x) / g(x)] = lim f(x) / lim g(x) (provided lim g(x) != 0)
+
+3. Continuity Checklist:
+   A function f(x) is continuous at x = a if:
+   a) f(a) is defined.
+   b) lim (x -> a) f(x) exists.
+   c) lim (x -> a) f(x) = f(a).
+
+WEEK 1 PRACTICE PROBLEMS:
+1. Evaluate lim (x -> 3) (x^2 - 9) / (x - 3)
+2. Determine if f(x) = (x^2 - 4)/(x - 2) for x != 2 and f(2) = 4 is continuous at x = 2.
+3. Find lim (x -> 0) (sqrt(x + 4) - 2) / x
+
+Homework due on Friday at 5:00 PM via Class Portal.

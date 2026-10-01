@@ -1,0 +1,23 @@
+============================================================
+TEMPORARY LEARNING MATERIAL - FORMULA REFERENCE & LAB GUIDE
+Subject: Physics
+Instructor: Dr. Alan Turing | Science Faculty
+License: CC BY-NC 4.0 (Open Educational Resource)
+============================================================
+
+1. KINEMATICS (CONSTANT ACCELERATION):
+   - v = v0 + a * t
+   - x = x0 + v0 * t + 0.5 * a * t^2
+   - v^2 = v0^2 + 2 * a * (x - x0)
+   - Average Velocity: v_avg = (v0 + v) / 2
+
+2. NEWTON'S LAWS:
+   - First Law (Inertia): An object remains at rest or constant velocity unless acted upon.
+   - Second Law: F_net = m * a
+   - Third Law: For every action, there is an equal and opposite reaction.
+   - Gravitational Force: F_g = m * g (g ≈ 9.81 m/s^2)
+   - Kinetic Friction: f_k = μ_k * F_N
+
+3. LAB 1 EXERCISES:
+   - Measuring acceleration down an inclined track with photogates.
+   - Record 5 trials at 15°, 20°, and 25° angles.

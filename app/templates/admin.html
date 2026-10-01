@@ -1,0 +1,408 @@
+{% extends "base.html" %}
+
+{% block title %}Admin & Teacher Portal - TemporaryTextbook{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto;">
+  
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">👨‍🏫 Admin & Teacher Dashboard</h1>
+      <p class="page-desc">Review missing textbook requests, issue temporary access codes, and manage authorized materials.</p>
+    </div>
+    <div style="display: flex; gap: 0.5rem; align-items: center;">
+      <button class="btn btn-secondary btn-sm" onclick="resetDemoData()" title="Reset database to initial demo state">
+        🔄 Reset Demo Data
+      </button>
+      <button class="btn btn-primary btn-sm" onclick="switchTab('tab-upload')">
+        ➕ Upload New Material
+      </button>
+    </div>
+  </div>
+
+  <!-- Stats Grid -->
+  <div class="grid grid-4" style="margin-bottom: 2rem;">
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #fef3c7; color: #b45309;">⏳</div>
+      <div>
+        <div class="stat-val" style="color: #b45309;">{{ stats.pending_requests }}</div>
+        <div class="stat-lbl">Pending Requests</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #dcfce7; color: #15803d;">🔑</div>
+      <div>
+        <div class="stat-val" style="color: #15803d;">{{ stats.active_codes }}</div>
+        <div class="stat-lbl">Active Access Codes</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #f1f5f9; color: #475569;">⏰</div>
+      <div>
+        <div class="stat-val" style="color: #475569;">{{ stats.expired_codes }}</div>
+        <div class="stat-lbl">Expired / Revoked</div>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon" style="background: #e0e7ff; color: #4338ca;">📚</div>
+      <div>
+        <div class="stat-val" style="color: #4338ca;">{{ stats.total_materials }}</div>
+        <div class="stat-lbl">Authorized Materials</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboard Navigation Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="tab-requests" onclick="switchTab('tab-requests')">
+      📋 Student Requests ({{ requests|length }})
+    </button>
+    <button class="tab-btn" data-tab="tab-codes" onclick="switchTab('tab-codes')">
+      🔑 Access Codes ({{ codes|length }})
+    </button>
+    <button class="tab-btn" data-tab="tab-materials" onclick="switchTab('tab-materials')">
+      📁 Authorized Materials ({{ materials|length }})
+    </button>
+    <button class="tab-btn" data-tab="tab-upload" onclick="switchTab('tab-upload')">
+      ➕ Upload Material
+    </button>
+  </div>
+
+  <!-- TAB 1: STUDENT REQUESTS -->
+  <div id="tab-requests" class="tab-content active">
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 1.1rem;">Missing Textbook Registration Queue</h3>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Showing all recent requests</span>
+      </div>
+
+      <div class="table-responsive" style="border: none;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Student Details</th>
+              <th>Class & Subject</th>
+              <th>Missing Book / Reason</th>
+              <th>Status</th>
+              <th>Submitted</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for req in requests %}
+            <tr>
+              <td><strong>#{{ req.id }}</strong></td>
+              <td>
+                <div style="font-weight: 600;">{{ req.student_name }}</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">{{ req.student_id }}</div>
+              </td>
+              <td>
+                <span class="badge badge-subject">{{ req.subject }}</span>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">{{ req.class_grade }}</div>
+              </td>
+              <td style="max-width: 250px;">
+                <div style="font-size: 0.85rem; font-weight: 500;">{{ req.textbook_title or 'General Curriculum' }}</div>
+                {% if req.reason %}
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-top: 2px;">{{ req.reason }}</div>
+                {% endif %}
+              </td>
+              <td>
+                {% if req.status == 'Approved' %}
+                  <span class="badge badge-approved">Approved</span>
+                {% elif req.status == 'Rejected' %}
+                  <span class="badge badge-rejected">Rejected</span>
+                {% else %}
+                  <span class="badge badge-pending">Pending</span>
+                {% endif %}
+              </td>
+              <td style="font-size: 0.8rem; color: var(--text-muted); white-space: nowrap;">
+                {{ req.created_at.strftime('%b %d, %H:%M') }}
+              </td>
+              <td style="text-align: right; white-space: nowrap;">
+                {% if req.status == 'Pending' %}
+                  <button class="btn btn-sm btn-success" onclick="openApproveModal({{ req.id }}, '{{ req.student_name }}', '{{ req.subject }}')">
+                    ✓ Approve & Issue Code
+                  </button>
+                  <button class="btn btn-sm btn-danger" onclick="rejectRequest({{ req.id }})">
+                    ✕ Reject
+                  </button>
+                {% elif req.status == 'Approved' %}
+                  <span style="font-size: 0.8rem; color: #15803d;">Code Issued</span>
+                {% else %}
+                  <span style="font-size: 0.8rem; color: var(--text-muted);">Closed</span>
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                No textbook requests found.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: ACCESS CODES -->
+  <div id="tab-codes" class="tab-content">
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 1.1rem;">Generated Temporary Access Codes</h3>
+        <span style="font-size: 0.85rem; color: var(--text-muted);">Expired codes are automatically rejected by system</span>
+      </div>
+
+      <div class="table-responsive" style="border: none;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Access Code</th>
+              <th>Student Name & ID</th>
+              <th>Subject</th>
+              <th>Created</th>
+              <th>Expires At</th>
+              <th>Status</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for code in codes %}
+            <tr>
+              <td>
+                <span style="font-family: monospace; font-size: 1rem; font-weight: 700; color: #1e40af; background: #eff6ff; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                  {{ code.code }}
+                </span>
+              </td>
+              <td>
+                <div style="font-weight: 600;">{{ code.student_name }}</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted);">{{ code.student_id }}</div>
+              </td>
+              <td><span class="badge badge-subject">{{ code.subject }}</span></td>
+              <td style="font-size: 0.8rem; color: var(--text-muted);">
+                {{ code.created_at.strftime('%b %d, %Y') }}
+              </td>
+              <td style="font-size: 0.8rem;">
+                <div style="font-weight: 500;">{{ code.expires_at.strftime('%b %d, %Y %H:%M') }}</div>
+              </td>
+              <td>
+                {% if code.current_status == 'Active' %}
+                  <span class="badge badge-active">Active</span>
+                {% elif code.current_status == 'Revoked' %}
+                  <span class="badge badge-revoked" title="{{ code.revoked_reason }}">Revoked</span>
+                {% else %}
+                  <span class="badge badge-expired">Expired</span>
+                {% endif %}
+              </td>
+              <td style="text-align: right; white-space: nowrap;">
+                {% if code.current_status == 'Active' %}
+                  <button class="btn btn-sm btn-secondary" onclick="extendAccessCode('{{ code.code }}')">
+                    + Extend
+                  </button>
+                  <button class="btn btn-sm btn-danger" onclick="revokeAccessCode('{{ code.code }}')">
+                    Revoke
+                  </button>
+                {% else %}
+                  <button class="btn btn-sm btn-secondary" onclick="extendAccessCode('{{ code.code }}')">
+                    Re-activate (+Days)
+                  </button>
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="7" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                No access codes generated yet.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: AUTHORIZED MATERIALS LIST -->
+  <div id="tab-materials" class="tab-content">
+    <div class="card" style="padding: 0; overflow: hidden;">
+      <div style="padding: 1rem 1.25rem; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h3 style="font-size: 1.1rem;">Authorized Learning Repository</h3>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+            Only teacher-created, school-approved, or openly licensed bridging files.
+          </p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="switchTab('tab-upload')">
+          ➕ Add Material
+        </button>
+      </div>
+
+      <div class="table-responsive" style="border: none;">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Material Title & Subject</th>
+              <th>Author / License</th>
+              <th>File Type & Size</th>
+              <th>Uploaded Date</th>
+              <th style="text-align: right;">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for m in materials %}
+            <tr>
+              <td>
+                <div style="font-weight: 600; font-size: 0.95rem;">{{ m.title }}</div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">{{ m.description }}</div>
+                <span class="badge badge-subject" style="margin-top: 4px;">{{ m.subject }}</span>
+              </td>
+              <td>
+                <div style="font-size: 0.85rem; font-weight: 500;">{{ m.author }}</div>
+                <div style="font-size: 0.75rem; color: #047857; background: #ecfdf5; padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 2px;">
+                  🛡️ {{ m.license_type }}
+                </div>
+              </td>
+              <td>
+                <span class="badge badge-subject">{{ m.file_type }}</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted); margin-left: 4px;">{{ m.file_size_kb }} KB</span>
+              </td>
+              <td style="font-size: 0.8rem; color: var(--text-muted);">
+                {{ m.created_at.strftime('%b %d, %Y') }}
+              </td>
+              <td style="text-align: right; white-space: nowrap;">
+                <a href="/static/uploads/{{ m.file_name }}" class="btn btn-sm btn-secondary" target="_blank">
+                  👁 Preview
+                </a>
+                <button class="btn btn-sm btn-danger" onclick="deleteMaterial({{ m.id }}, '{{ m.title }}')">
+                  🗑 Delete
+                </button>
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="5" style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                No learning materials in repository. Click "Add Material" to upload.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 4: UPLOAD MATERIAL FORM -->
+  <div id="tab-upload" class="tab-content">
+    <div class="card" style="max-width: 700px; margin: 0 auto;">
+      <div class="card-title">
+        <span>📤</span> Upload Teacher Bridging Material
+      </div>
+      <div class="card-desc">
+        Upload teacher-created summaries, exercise sheets, and openly licensed study guides for students awaiting textbooks.
+      </div>
+
+      <!-- Compliance Notice -->
+      <div style="background: #fefce8; border: 1px solid #fef08a; padding: 0.85rem; border-radius: var(--radius-md); font-size: 0.85rem; color: #854d0e; margin-bottom: 1.25rem;">
+        <strong>⚠️ Copyright Notice:</strong> Do <u>not</u> upload scans or unauthorized copies of commercial textbooks. Only upload teacher-authored notes, school-created problem sets, or OER resources.
+      </div>
+
+      <form id="material-upload-form" onsubmit="uploadMaterial(event)">
+        <div class="form-group">
+          <label class="form-label" for="mat_title">Resource Title <span class="req">*</span></label>
+          <input type="text" id="mat_title" name="title" class="form-control" placeholder="e.g. Week 1-2 Mechanics Formula & Problem Sheet" required>
+        </div>
+
+        <div class="grid grid-2" style="gap: 1rem;">
+          <div class="form-group">
+            <label class="form-label" for="mat_subject">Subject <span class="req">*</span></label>
+            <select id="mat_subject" name="subject" class="form-control" required>
+              <option value="" disabled selected>Select Subject...</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Physics">Physics</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Biology">Biology</option>
+              <option value="Literature">Literature</option>
+              <option value="Chemistry">Chemistry</option>
+              <option value="History">History</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="mat_author">Instructor / Author <span class="req">*</span></label>
+            <input type="text" id="mat_author" name="author" class="form-control" placeholder="e.g. Dr. Alan Turing" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="mat_license">License / Authorization Type <span class="req">*</span></label>
+          <select id="mat_license" name="license_type" class="form-control" required>
+            <option value="Teacher Original Curriculum" selected>Teacher Original Curriculum / Lesson Notes</option>
+            <option value="School Department Authorized">School Department Authorized Summary</option>
+            <option value="CC BY-NC 4.0 (Open Educational Resource)">CC BY-NC 4.0 (Open Educational Resource)</option>
+            <option value="MIT / Open Source Educational">MIT / Open Source Educational Material</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="mat_description">Short Description / Syllabus Topics</label>
+          <textarea id="mat_description" name="description" class="form-control" placeholder="Key topics covered, homework problems, formulas..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="mat_file">Select File (PDF, DOCX, TXT, Image) <span class="req">*</span></label>
+          <input type="file" id="mat_file" name="file" class="form-control" accept=".pdf,.docx,.txt,.doc,.png,.jpg,.jpeg" required>
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">
+          📤 Save & Publish Material to Repository
+        </button>
+      </form>
+    </div>
+  </div>
+
+</div>
+
+<!-- APPROVAL MODAL -->
+<div id="approveModal" class="modal-overlay">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 style="font-size: 1.25rem;">Approve Request & Issue Access Code</h3>
+      <button class="modal-close" onclick="closeModal('approveModal')">✕</button>
+    </div>
+
+    <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.25rem;">
+      Issue a temporary code for <strong id="approve-modal-student"></strong> (<span id="approve-modal-subject"></span>).
+    </p>
+
+    <form id="approve-form" onsubmit="submitApproveRequest(event)">
+      <input type="hidden" id="approve-req-id" name="request_id">
+
+      <div class="form-group">
+        <label class="form-label" for="approve_duration">Temporary Access Duration</label>
+        <select id="approve_duration" name="duration_days" class="form-control">
+          <option value="3">3 Days (Quick Bridge)</option>
+          <option value="7" selected>7 Days (Standard 1 Week)</option>
+          <option value="14">14 Days (2 Weeks)</option>
+          <option value="30">30 Days (1 Month)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="approve_admin_note">Approval Note (Optional)</label>
+        <input type="text" id="approve_admin_note" name="admin_note" class="form-control" placeholder="e.g. Approved temporary math notes while shipment is in transit.">
+      </div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end; margin-top: 1.5rem;">
+        <button type="button" class="btn btn-secondary" onclick="closeModal('approveModal')">Cancel</button>
+        <button type="submit" class="btn btn-success">Generate Code & Grant Access</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

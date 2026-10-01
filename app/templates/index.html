@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}TemporaryTextbook - Home{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+  
+  <!-- Hero Section -->
+  <section class="card" style="background: linear-gradient(135deg, #1e293b, #0f172a); color: white; padding: 2.5rem 2rem; margin-bottom: 2rem; border: none; box-shadow: var(--shadow-lg);">
+    <div style="display: flex; flex-wrap: wrap; gap: 2rem; align-items: center; justify-content: space-between;">
+      <div style="max-width: 600px;">
+        <span class="badge" style="background: #38bdf8; color: #082f49; margin-bottom: 0.75rem; font-weight: 700;">ACADEMIC CONTINUITY</span>
+        <h1 style="color: white; font-size: 2.25rem; line-height: 1.2; margin-bottom: 1rem;">
+          Never fall behind while waiting for your official textbook.
+        </h1>
+        <p style="color: #cbd5e1; font-size: 1.05rem; line-height: 1.6; margin-bottom: 1.5rem;">
+          Students who have not received their textbooks can register for temporary access. Teachers approve requests and issue time-limited access codes for authorized bridging summaries, worksheets, and lecture notes.
+        </p>
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+          <a href="/student" class="btn btn-primary btn-lg" style="background: #3b82f6;">
+            🎒 Student Portal
+          </a>
+          <a href="/admin" class="btn btn-secondary btn-lg" style="background: rgba(255,255,255,0.12); color: white; border-color: rgba(255,255,255,0.25);">
+            👨‍🏫 Admin & Teacher Portal
+          </a>
+        </div>
+      </div>
+      <div style="background: rgba(255, 255, 255, 0.07); backdrop-filter: blur(8px); padding: 1.5rem; border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,0.15); min-width: 250px;">
+        <div style="font-size: 0.85rem; color: #94a3b8; text-transform: uppercase; font-weight: 600; margin-bottom: 0.75rem;">System Snapshot</div>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #38bdf8;">{{ stats.pending_requests }}</div>
+            <div style="font-size: 0.8rem; color: #cbd5e1;">Pending Textbook Requests</div>
+          </div>
+          <div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #4ade80;">{{ stats.active_codes }}</div>
+            <div style="font-size: 0.8rem; color: #cbd5e1;">Active Temporary Access Codes</div>
+          </div>
+          <div>
+            <div style="font-size: 1.5rem; font-weight: 700; color: #facc15;">{{ stats.total_materials }}</div>
+            <div style="font-size: 0.8rem; color: #cbd5e1;">Teacher-Created Bridging Materials</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Flow Explanation Cards -->
+  <section style="margin-bottom: 2.5rem;">
+    <div style="text-align: center; margin-bottom: 1.5rem;">
+      <h2 style="font-size: 1.5rem;">How the TemporaryTextbook Bridge Works</h2>
+      <p style="color: var(--text-muted); font-size: 0.95rem;">Simple 4-step workflow to guarantee learning continuity with 100% legal compliance.</p>
+    </div>
+
+    <div class="grid grid-4">
+      <div class="card card-hover">
+        <div style="font-size: 1.75rem; color: var(--primary); margin-bottom: 0.5rem;">1️⃣</div>
+        <h3 style="font-size: 1rem; margin-bottom: 0.35rem;">Student Registers</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Student submits their Student ID, Class, and Subject with the reason their official copy is delayed.
+        </p>
+      </div>
+
+      <div class="card card-hover">
+        <div style="font-size: 1.75rem; color: #10b981; margin-bottom: 0.5rem;">2️⃣</div>
+        <h3 style="font-size: 1rem; margin-bottom: 0.35rem;">Teacher Approves</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Instructor verifies the student's status and generates a secure temporary access code (e.g. <code>A7K2-P9MX</code>).
+        </p>
+      </div>
+
+      <div class="card card-hover">
+        <div style="font-size: 1.75rem; color: #f59e0b; margin-bottom: 0.5rem;">3️⃣</div>
+        <h3 style="font-size: 1rem; margin-bottom: 0.35rem;">Unlock Materials</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Student enters the code to instantly unlock authorized teacher notes, summaries, and practice problem sets.
+        </p>
+      </div>
+
+      <div class="card card-hover">
+        <div style="font-size: 1.75rem; color: #6366f1; margin-bottom: 0.5rem;">4️⃣</div>
+        <h3 style="font-size: 1rem; margin-bottom: 0.35rem;">Automatic Expiry</h3>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Access automatically terminates when the code expires or when revoked upon official textbook delivery.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Interactive Demo Quick-Start Box -->
+  <section class="card" style="border: 2px solid #bfdbfe; background: #eff6ff; margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+      <h3 style="font-size: 1.15rem; color: #1e3a8a; display: flex; align-items: center; gap: 0.5rem;">
+        <span>🧪</span> Pre-seeded Demo Data for Fast Testing
+      </h3>
+      <span class="badge badge-active">Ready to Test</span>
+    </div>
+    <p style="font-size: 0.9rem; color: #1e40af; margin-bottom: 1rem;">
+      You can test any stage of the lifecycle right away with these sample records:
+    </p>
+
+    <div class="grid grid-3" style="gap: 1rem;">
+      <div style="background: white; padding: 1rem; border-radius: var(--radius-md); border: 1px solid #dbeafe;">
+        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #059669; margin-bottom: 0.25rem;">Active Access Code</div>
+        <div style="font-family: monospace; font-size: 1.15rem; font-weight: 700; color: #15803d;">A7K2-P9MX</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Subject: <strong>Mathematics</strong></div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">Student: Bob Johnson (STU-1002)</div>
+        <a href="/student" class="btn btn-sm btn-success" style="margin-top: 0.6rem; width: 100%;">Try in Student Portal →</a>
+      </div>
+
+      <div style="background: white; padding: 1rem; border-radius: var(--radius-md); border: 1px solid #dbeafe;">
+        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #d97706; margin-bottom: 0.25rem;">Pending Request</div>
+        <div style="font-size: 1.05rem; font-weight: 700; color: #b45309;">Alice Smith (Physics)</div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Student ID: <strong>STU-1001</strong></div>
+        <div style="font-size: 0.8rem; color: var(--text-muted);">Status: Waiting for Admin Approval</div>
+        <a href="/admin" class="btn btn-sm btn-primary" style="margin-top: 0.6rem; width: 100%;">Approve in Admin →</a>
+      </div>
+
+      <div style="background: white; padding: 1rem; border-radius: var(--radius-md); border: 1px solid #dbeafe;">
+        <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 700; color: #dc2626; margin-bottom: 0.25rem;">Expired / Revoked Tests</div>
+        <div style="font-family: monospace; font-size: 0.95rem; font-weight: 700; color: #475569;">EXP1-9999 <span style="font-size:0.75rem; font-weight:normal;">(Expired)</span></div>
+        <div style="font-family: monospace; font-size: 0.95rem; font-weight: 700; color: #991b1b; margin-top: 0.2rem;">RVK8-4444 <span style="font-size:0.75rem; font-weight:normal;">(Revoked)</span></div>
+        <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem;">Tests rejection security logic.</div>
+        <a href="/student" class="btn btn-sm btn-secondary" style="margin-top: 0.6rem; width: 100%;">Test Expiry Rejection →</a>
+      </div>
+    </div>
+  </section>
+
+</div>
+{% endblock %}

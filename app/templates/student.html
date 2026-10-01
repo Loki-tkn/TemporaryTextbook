@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Student Portal - TemporaryTextbook{% endblock %}
+
+{% block content %}
+<div style="max-width: 1000px; margin: 0 auto;">
+  
+  <div class="page-header">
+    <div>
+      <h1 class="page-title">🎒 Student Learning Bridge Portal</h1>
+      <p class="page-desc">Request temporary access, check approval status, and unlock authorized study materials.</p>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <a href="#code-unlock-section" class="btn btn-primary btn-sm">🔑 Enter Access Code</a>
+      <a href="#request-section" class="btn btn-secondary btn-sm">📝 Submit Request</a>
+    </div>
+  </div>
+
+  <!-- SECTION 1: ACCESS CODE ENTRY & UNLOCKED MATERIALS -->
+  <section id="code-unlock-section" class="card code-entry-box" style="margin-bottom: 2.5rem;">
+    <div style="max-width: 550px; margin: 0 auto;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🔑</div>
+      <h2 style="font-size: 1.4rem; margin-bottom: 0.35rem;">Unlock Authorized Subject Materials</h2>
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1.25rem;">
+        Enter your approved temporary access code (e.g. <code>A7K2-P9MX</code>) to view teacher notes & exercises.
+      </p>
+
+      <form onsubmit="event.preventDefault(); verifyAccessCode();" style="display: flex; flex-direction: column; align-items: center;">
+        <input 
+          type="text" 
+          id="student-access-code" 
+          class="code-input-large" 
+          placeholder="XXXX-XXXX" 
+          maxlength="9" 
+          autocomplete="off" 
+          required
+        >
+        <button type="submit" class="btn btn-primary btn-lg" style="width: 100%; max-width: 320px;">
+          ⚡ Verify & Access Materials
+        </button>
+      </form>
+
+      <div id="code-feedback-msg"></div>
+    </div>
+
+    <!-- Container where materials will dynamically load -->
+    <div id="unlocked-materials-container"></div>
+  </section>
+
+
+  <div class="grid grid-2" style="align-items: start; margin-bottom: 3rem;">
+    
+    <!-- SECTION 2: MISSING TEXTBOOK REGISTRATION FORM -->
+    <section id="request-section" class="card">
+      <div class="card-title">
+        <span>📝</span> Request Temporary Access
+      </div>
+      <div class="card-desc">
+        Are you still waiting for your physical or official digital textbook? Register below for teacher approval.
+      </div>
+
+      <form id="student-request-form" onsubmit="submitStudentRequest(event)">
+        <div class="grid grid-2" style="gap: 0.75rem;">
+          <div class="form-group">
+            <label class="form-label" for="req_student_name">Full Name <span class="req">*</span></label>
+            <input type="text" id="req_student_name" name="student_name" class="form-control" placeholder="e.g. Alice Smith" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="req_student_id">Student ID <span class="req">*</span></label>
+            <input type="text" id="req_student_id" name="student_id" class="form-control" placeholder="e.g. STU-1001" required>
+          </div>
+        </div>
+
+        <div class="grid grid-2" style="gap: 0.75rem;">
+          <div class="form-group">
+            <label class="form-label" for="req_class_grade">Class / Grade <span class="req">*</span></label>
+            <input type="text" id="req_class_grade" name="class_grade" class="form-control" placeholder="e.g. Grade 10B" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="req_subject">Subject <span class="req">*</span></label>
+            <select id="req_subject" name="subject" class="form-control" required>
+              <option value="" disabled selected>Select Subject...</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="Physics">Physics</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Biology">Biology</option>
+              <option value="Literature">Literature</option>
+              <option value="Chemistry">Chemistry</option>
+              <option value="History">History</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="req_textbook_title">Missing Textbook Title (Optional)</label>
+          <input type="text" id="req_textbook_title" name="textbook_title" class="form-control" placeholder="e.g. University Physics Vol 1">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="req_reason">Reason / Status Note</label>
+          <textarea id="req_reason" name="reason" class="form-control" placeholder="e.g. Bookstore out of stock, shipping expected next Tuesday."></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width: 100%;">
+          Submit Textbook Request
+        </button>
+      </form>
+    </section>
+
+    <!-- SECTION 3: REQUEST STATUS TRACKER -->
+    <section class="card">
+      <div class="card-title">
+        <span>🔍</span> Check Request Status & Code
+      </div>
+      <div class="card-desc">
+        Enter your Student ID to check if your instructor has approved your request and issued an access code.
+      </div>
+
+      <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+        <input 
+          type="text" 
+          id="search-student-id" 
+          class="form-control" 
+          placeholder="Enter Student ID (e.g. STU-1002)"
+          onkeydown="if(event.key === 'Enter') { event.preventDefault(); lookupStudentStatus(); }"
+        >
+        <button type="button" class="btn btn-secondary" onclick="lookupStudentStatus()">
+          Lookup
+        </button>
+      </div>
+
+      <!-- Quick demo chips -->
+      <div style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+        Quick demo lookups:
+        <a href="javascript:void(0)" onclick="document.getElementById('search-student-id').value='STU-1002'; lookupStudentStatus();" style="color: var(--primary); margin-left: 0.25rem;">STU-1002 (Approved)</a> •
+        <a href="javascript:void(0)" onclick="document.getElementById('search-student-id').value='STU-1001'; lookupStudentStatus();" style="color: var(--primary); margin-left: 0.25rem;">STU-1001 (Pending)</a>
+      </div>
+
+      <div id="student-status-results">
+        <div style="padding: 1.5rem; text-align: center; border: 1px dashed var(--border-color); border-radius: var(--radius-md); color: var(--text-muted);">
+          Your submitted request and access codes will be displayed here.
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Check URL query param for code auto-fill
+  window.addEventListener('DOMContentLoaded', () => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    if (code) {
+      const input = document.getElementById('student-access-code');
+      if (input) {
+        input.value = code;
+        verifyAccessCode();
+      }
+    }
+  });
+</script>
+{% endblock %}

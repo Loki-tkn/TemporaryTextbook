@@ -1,0 +1,23 @@
+============================================================
+TEMPORARY LEARNING MATERIAL - STARTER NOTES & CHEATSHEET
+Subject: Computer Science
+Instructor: Elena Rostova | Dept. of Computer Science
+License: MIT Licensed Educational Material
+============================================================
+
+DATA STRUCTURES IN PYTHON:
+- Lists: ordered, mutable, [1, 2, 3]
+- Tuples: ordered, immutable, (1, 2, 3)
+- Dictionaries: key-value pairs, {'name': 'Alice', 'id': 'S101'}
+- Sets: unordered, unique elements, {1, 2, 3}
+
+CONTROL FLOW:
+for item in collection:
+    if condition:
+        process(item)
+    else:
+        fallback()
+
+EXERCISE:
+Write a function `filter_even_squares(numbers: list[int]) -> list[int]`
+that returns squares of all even numbers.
